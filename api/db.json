@@ -1,0 +1,17 @@
+{
+    "users": [
+        {
+         "id": 1,
+            "email": "test@test.com",
+            "password": "123456",
+            "token": "abc123"
+        },
+         {
+         "id": 2,
+            "email": "smith@123.com",
+            "password": "123",
+            "token": "abc12"
+        }
+    ]
+    
+}
