@@ -1,10 +1,10 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import LoginForm from "./LoginForm";
+import LoginForm from "./components/LoginForm";
 import Dashboard from "./Dashboard";
-import Home from "./Home";
+import Home from "./components/Home";
 import Settings from "./Settings";
-import Users from "./Users";
-import Profile from "./profile";
+import Users from "./components/Users";
+import Profile from "./components/profile";
 
 function App() {
   return (

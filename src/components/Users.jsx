@@ -5,7 +5,7 @@ import {
   flexRender,
 } from "@tanstack/react-table";
 import { GROUP_COLUMNS } from "./columns";
-import MOCK_DATA from "../api/MOCK_DATA.json";
+import MOCK_DATA from "../../api/MOCK_DATA.json";
 import { useMemo } from "react";
 import { useState } from "react";
 
