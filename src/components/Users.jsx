@@ -1,77 +1,65 @@
+import React, { useMemo, useState } from 'react';
+import DATA from '../../api/data.json'; // Adjust path as needed
+import DataTable from './Table/DataTable';
+import { GROUP_COLUMNS } from "./Table/columns";
+import MOCK_DATA from "../../api/MOCK_DATA.json";
 import {
-  useReactTable,
+   useReactTable,
   getCoreRowModel,
   getFilteredRowModel,
-  flexRender,
+  
 } from "@tanstack/react-table";
-import { GROUP_COLUMNS } from "./columns";
-import MOCK_DATA from "../../api/MOCK_DATA.json";
-import { useMemo } from "react";
-import { useState } from "react";
 
-export default function Users() {
+
+const Users = () => {
   const columns = useMemo(() => GROUP_COLUMNS, []);
-  const [filter, setFilter] = useState("");
+
+  // ✅ Extract nested array from MOCK_DATA
   const data = useMemo(() => MOCK_DATA, []);
 
-  const table = useReactTable({
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(5);
+
+  
+    const [filter, setFilter] = useState("");
+
+ const table = useReactTable({
     data,
     columns,
-    getCoreRowModel: getCoreRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
     state: {
       globalFilter: filter,
+  
     },
     onGlobalFilterChange: setFilter,
+        getFilteredRowModel: getFilteredRowModel(),
+    getCoreRowModel: getCoreRowModel(),
   });
+  const filteredRows = table.getFilteredRowModel().rows;
+  const paginatedRows = filteredRows.slice((page - 1) * limit, page * limit);
 
   return (
-    <div className=" flex flex-col  p-4   overflow-auto">
-      <input
+  <div className="  flex flex-col  p-4   overflow-auto">
+  <div className=" flex flex-col   ">
+    <input
         type="text"
         placeholder="Search..."
-        className="border border-blue-300 rounded-md p-2 mb-4 w-64 mx-auto outline-none"
-        onChange={(e) => setFilter(e.target.value)}
+        className="border border-blue-300 rounded-md p-2 mb-4 w-64 mx-auto outline-none "
+       value={filter} 
+       onChange={(e) => setFilter(e.target.value)}
+      />   
+ 
+         <DataTable
+        dataRows={paginatedRows.map(row => row.original)} // pass raw data
+        dataColumns={columns}
+        page={page}
+        setPage={setPage}
+        limit={limit}
+        setLimit={setLimit}
+        totalItems={filteredRows.length}
       />
-      <table className="min-w-full table-auto bg-white">
-        <thead className="bg-gray-100 bg-gradient-to-r from-indigo-400 to-cyan-400">
-          {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id}>
-              {headerGroup.headers.map((header) => (
-                <th
-                  key={header.id}
-                  colSpan={header.colSpan}
-                  className="text-center text-sm font-medium  px-4 py-2 border border-gray-300 text-gray-800"
-                >
-                  {header.isPlaceholder
-                    ? null
-                    : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
-                </th>
-              ))}
-            </tr>
-          ))}
-        </thead>
-        <tbody>
-          {table.getRowModel().rows.map((row) => (
-            <tr
-              key={row.id}
-              className="hover:bg-blue-200 even:bg-gray-200 odd:bg-gray-100 transition-colors duration-150"
-            >
-              {row.getVisibleCells().map((cell) => (
-                <td
-                  key={cell.id}
-                  className="px-4 py-2 text-sm text-gray-800 border-b text-center"
-                >
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
+       </div>
     </div>
   );
-}
+};
+
+export default Users;

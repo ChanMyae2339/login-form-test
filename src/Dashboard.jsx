@@ -83,9 +83,11 @@ export default function Dashboard() {
               <FaUser />
               {isOpen && <Link to="/dashboard/profile">Profile</Link>}
             </li>
-            <li
+           
+
+              <li
               className={`px-4 py-2 flex items-center gap-2 hover:bg-blue-300 ${
-                location.pathname === "/dashboard/users"
+                location.pathname === "/dashboard/table"
                   ? "bg-blue-300 font-semibold"
                   : ""
               }`}

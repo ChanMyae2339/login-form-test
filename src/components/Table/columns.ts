@@ -49,6 +49,7 @@ export const GROUP_COLUMNS = [
     header: "Name",
     footer: "Name",
     columns: [
+      
       columnHelper.accessor("first_name", {
         header: "First Name",
         footer: "First Name",
