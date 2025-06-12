@@ -50,7 +50,7 @@ export default function Dashboard() {
           <div className="flex items-center justify-between px-2 py-2 ">
             <span className={isOpen ? " " : "hidden   "}>
               <img
-                className={isOpen ? "h-12 pr-2 " : "h-12    "}
+                className={isOpen ? "h-12 pr-3 " : "h-12    "}
                 src="https://www.agbcommunication.com/_next/static/media/AGBLogo.77b5873b.svg"
                 alt="Logo"
               />
@@ -102,7 +102,7 @@ export default function Dashboard() {
       {/* Main Content */}
       <div className="flex-1 flex flex-col ">
         {/* Fixed Navbar */}
-        <div className=" w-full  px-4 py-4 flex  shadow-md  ">
+        <div className=" w-full  px-4 py-4 flex  shadow-lg  relative ">
           <div className="flex justify-between  w-full  ">
             <div className="text-lg text-gray-500 font-semibold">
               {breadcrumb.map((crumb) => (

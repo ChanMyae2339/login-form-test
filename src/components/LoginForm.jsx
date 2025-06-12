@@ -9,7 +9,7 @@ function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  
   const navigate = useNavigate();
 
   const validEmail = (email) => {
@@ -20,23 +20,22 @@ function LoginForm() {
   const handleLogin = async (e) => {
     e.preventDefault();
     if (!validEmail(email)) {
-      setError(" Invalid email format");
+      toast.error(" Invalid email format");
       return;
     }
-
+  
     try {
       const response = await fetch(
-        `http://localhost:5000/users?email=${email}&password=${password}`
+        `http://localhost:5000/users?email=${email}&password=${password}&role=${role}`
       );
       const data = await response.json();
 
       if (data.length > 0) {
         localStorage.setItem("users", JSON.stringify(data[0]));
-
         toast.success(" Login successful!");
         setTimeout(() => navigate("/dashboard/users"), 1500);
       } else {
-        toast.error(" Username or password incorrect");
+        toast.error(" Useremail or password incorrect");
       }
     } catch (error) {
       console.error("Error:", error);
@@ -45,70 +44,89 @@ function LoginForm() {
   };
 
   return (
-    <div className=" flex justify-center items-center min-h-screen bg-gradient-to-r from-indigo-400 to-cyan-400">
-      <form
-        onSubmit={handleLogin}
-        className="p-8 rounded-2xl shadow-md w-full max-w-sm  bg-white flex flex-col  "
-      >
-        <img
-          src="https://www.agbcommunication.com/_next/static/media/AGBLogo.77b5873b.svg"
-          className="mb-10 mx-auto  w-30"
-          alt=""
-        />
-
-        {/* Email */}
-        <div className="relative mt-9 mb-6">
-          <FaUserAlt className="absolute left-2 top-3" />
-          <input
-            type="text"
-            placeholder="email"
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full  px-10 py-2 shadow rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500"
-            required
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-teal-400 to-blue-900 relative overflow-hidden">
+      {/* Stars background (optional, for effect) */}
+      <div className="absolute inset-0 pointer-events-none z-0"></div>
+      <div className="bg-white/90 rounded-2xl shadow-2xl max-w-md w-full mx-4 z-10">
+        {/* Scenic Illustration */}
+        <div className="bg-gradient-to-r from-green-400 to-blue-500 rounded-t-2xl p-6 flex flex-col items-center relative">
+          <img
+            src="https://www.agbcommunication.com/_next/static/media/AGBLogo.77b5873b.svg"
+            alt="Scenic"
+            className="rounded-t-2xl mb-4"
           />
-          {error && <span className="text-red-500 text-sm">{error}</span>}
+          <h2 className="text-2xl font-bold text-white mb-2 text-center">
+            Welcome to the website
+          </h2>
+          <p className="text-white text-center text-sm">
+            This is the login form testing page
+          </p>
         </div>
-
-        {/* Password */}
-        <div className="relative">
-          <RiLockPasswordFill className="absolute left-2 top-3" />
-          <input
-            type={showPassword ? "text" : "password"}
-            placeholder="Enter your password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full px-10 mb-4 py-2 shadow rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500"
-            required
-          />
+        {/* Login Form */}
+        <form onSubmit={handleLogin} className="p-8 flex flex-col gap-4">
+          <h3 className="text-center text-lg font-semibold text-gray-700 mb-2">
+            USER LOGIN
+          </h3>
+          {/* Username */}
+          <div className="relative">
+            <FaUserAlt className="absolute left-3 top-3 text-blue-700" />
+            <input
+              type="text"
+              placeholder="Username"
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full pl-10 pr-3 py-2 rounded-full bg-blue-100 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-400"
+              required
+            />
+          </div>
+          {/* Password */}
+          <div className="relative">
+            <RiLockPasswordFill className="absolute left-3 top-3 text-blue-700" />
+            <input
+              type={showPassword ? "text" : "password"}
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full pl-10 pr-10 py-2 rounded-full bg-blue-100 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-400"
+              required
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-3 text-blue-700"
+            >
+              {showPassword ? <FaRegEyeSlash /> : <FaRegEye />}
+            </button>
+          </div>
+        
+          {/* Remember & Forgot Password */}
+          <div className="flex justify-between items-center text-sm text-blue-900 mt-2">
+            <label className="flex items-center gap-1">
+              <input type="checkbox" className="accent-blue-500" />
+              Remember
+            </label>
+            <a href="#" className="hover:underline">
+              Forgot Password?
+            </a>
+          </div>
+          {/* Login Button */}
           <button
-            type="button"
-            onClick={() => {
-              setShowPassword(!showPassword);
-              {
-                showPassword
-                  ? toast.info(" Password Show")
-                  : toast.info(" Password Hide");
-              }
-            }}
-            className="absolute right-6 top-6 transform -translate-y-3 text-black p-1 rounded focus:outline-none"
+            type="submit"
+            className="w-full bg-blue-700 hover:bg-blue-900 text-white font-semibold py-2 rounded-full mt-4 transition"
           >
-            {showPassword ? <FaRegEyeSlash /> : <FaRegEye />}
+            Login
           </button>
-        </div>
-
-        <input
-          type="submit"
-          value="Login"
-          className="w-full bg-sky-500 hover:bg-sky-700 text-white font-semibold py-2 px-4 mt-6 rounded transition duration-200"
-        />
-        <p className="text-center text-sm text-gray-500 mt-4">
-          Don't have an account?{" "}
-          <a href="#" className="text-sky-500 hover:underline ">
-            Sign up
+          <ToastContainer />
+        </form>
+        <div className="text-center text-xs text-gray-500 py-2">
+          designed by{" "}
+          <a
+            href="https://www.freepik.com"
+            className="text-blue-700 hover:underline"
+          >
+            agbcommunication
           </a>
-        </p>
-        <ToastContainer />
-      </form>
+        </div>
+      </div>
     </div>
   );
 }

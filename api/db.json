@@ -2,12 +2,14 @@
     "users": [
         {
          "id": 1,
+            "name": "John",
             "email": "test@test.com",
             "password": "123456",
             "token": "abc123"
         },
          {
          "id": 2,
+            "name": "Smith",
             "email": "smith@123.com",
             "password": "123",
             "token": "abc12"

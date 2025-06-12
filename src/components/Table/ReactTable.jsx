@@ -1,3 +1,4 @@
+// ReactTable.jsx
 import React, { useState, useMemo, Fragment } from "react";
 import {
   useReactTable,
@@ -7,80 +8,106 @@ import {
 } from "@tanstack/react-table";
 import { TbChevronsRight } from "react-icons/tb";
 import ExpandableComponent from "./ExpandableComponent";
+import { AnimatePresence } from "framer-motion";
 
 const ReactTable = ({ dataRows, dataColumns }) => {
   const [expanded, setExpanded] = useState({});
+  const [visibleColumnIds, setVisibleColumnIds] = useState([]);
+
+  const hidingPriority = ["email", "ip_address", "age", "gender", "last_name"];
+
+  useMemo(() => {
+    const updateVisibleColumns = () => {
+      const screenWidth = window.innerWidth;
+
+      let hiddenCount = 0;
+      let approxColWidth = 150;
+      let maxCols = Math.floor(screenWidth / approxColWidth);
+      hiddenCount = Math.max(0, dataColumns.length - maxCols);
+      const hiddenColumns = hidingPriority.slice(0, hiddenCount);
+      const visibleColumns = dataColumns.filter(
+        (col) => !hiddenColumns.includes(col.accessorKey)
+      );
+
+      setVisibleColumnIds(
+        visibleColumns.map((col) => col.id || col.accessorKey)
+      );
+    };
+
+    updateVisibleColumns();
+    window.addEventListener("resize", updateVisibleColumns);
+    return () => {
+      window.removeEventListener("resize", updateVisibleColumns);
+    };
+  }, [dataColumns]);
 
   const data = useMemo(() => dataRows, [dataRows]);
- const processedColumns = useMemo(
-    () =>
-      dataColumns.map((col) => ({
-        id: col.accessor,
-        header: col.Header,
-        accessorKey: col.accessor,
-        ...col,
-      })),
-    [dataColumns]
-  );
 
-  // Expander column at far left
-  const expanderColumn = useMemo(
-    () => [
+  const expanderColumn = useMemo(() => {
+    // Only show expander if some columns are hidden
+    const showExpander = visibleColumnIds.length < dataColumns.length;
+    if (!showExpander) return [];
+    return [
       {
         id: "expander",
-          header: () => (
-          <button
-            className="px-2 "
-            onClick={() => {
-              
-              const isAllExpanded =
-                Object.keys(expanded).length === dataRows.length;
-              const newExpanded = {};
-              if (!isAllExpanded) {
-                dataRows.forEach((_, idx) => {
-                  newExpanded[idx] = true;
-                });
-              }
-              setExpanded(newExpanded);
-            }}
-          >
-            <TbChevronsRight className="text-xl  " />
-          </button>
-        ),
-
-        cell: ({ row }) => (
-          <div className="flex justify-center items-center ">
+        header: () => {
+          const isAllExpanded =
+            Object.keys(expanded).length === dataRows.length;
+          return (
             <button
-              onClick={() =>
+              className="bg-white text-blue-500 px-2 py-1 rounded hover:bg-gray-600 transition duration-300"
+              onClick={() => {
+                const newExpanded = {};
+                if (!isAllExpanded) {
+                  dataRows.forEach((row, index) => {
+                    newExpanded[index] = true;
+                  });
+                }
+                setExpanded(newExpanded);
+              }}
+            >
+              <TbChevronsRight
+                className={`text-lg transition-transform duration-300 ${
+                  isAllExpanded ? "rotate-90" : ""
+                }`}
+              />
+            </button>
+          );
+        },
+        cell: ({ row }) => (
+          <div className="flex justify-center items-center">
+            <button
+              className="bg-green-500 text-white px-2 py-1 rounded hover:bg-gray-600 transition duration-300"
+              onClick={() => {
                 setExpanded((prev) => ({
                   ...prev,
                   [row.id]: !prev[row.id],
-                }))
-              }
+                }));
+              }}
             >
               <TbChevronsRight
-                className={`text-lg transition-transform duration-300 
-                  ${row.getIsExpanded() ? "rotate-90" : ""
-                  }`}
+                className={`text-lg transition-transform duration-300 ${
+                  row.getIsExpanded() ? "rotate-90" : ""
+                }`}
               />
             </button>
           </div>
         ),
       },
-    ],
-    [expanded , dataRows]
+    ];
+  }, [expanded, visibleColumnIds.length, dataColumns.length, dataRows]);
 
-  );
-
-  const columns = useMemo(
-    () => [...expanderColumn, ...processedColumns],
-    [expanderColumn, processedColumns]
-  );
+  const finalVisibleColumns = useMemo(() => {
+    const filtered = dataColumns.filter((col) =>
+      visibleColumnIds.includes(col.id || col.accessorKey)
+    );
+    return [...expanderColumn, ...filtered];
+  }, [dataColumns, visibleColumnIds, expanderColumn]);
 
   const table = useReactTable({
     data,
-    columns,
-    state: { expanded },
+    columns: finalVisibleColumns,
+    state: { expanded: expanded },
     getCoreRowModel: getCoreRowModel(),
     getExpandedRowModel: getExpandedRowModel(),
     onExpandedChange: setExpanded,
@@ -88,51 +115,48 @@ const ReactTable = ({ dataRows, dataColumns }) => {
 
   return (
     <div className="p-4">
-      <table className="border-collapse shadow-md rounded-lg bg-white text-sm w-full">
-        <thead className="bg-gradient-to-r from-indigo-400 to-cyan-400 text-gray-700">
+      <table className="w-full border-collapse text-sm text-gray-800 shadow-md ">
+        <thead className="bg-gradient-to-r from-indigo-500 to-sky-400 text-white text-sm font-semibold">
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
                 <th
                   key={header.id}
-                  colSpan={header.colSpan}
-                  className="px-4 py-2 text-left font-medium border-b border-gray-200"
+                  className="px-4 py-3 text-left uppercase tracking-wider"
                 >
-
-                  {header.isPlaceholder
-                    ? null
-                    : flexRender(
-                      header.column.columnDef.header,
-                      header.getContext()
-                    )}
+                  {flexRender(header.column.columnDef.header,header.getContext() )}
+              
                 </th>
               ))}
             </tr>
           ))}
         </thead>
-        <tbody className="divide-y divide-gray-200">
+        <tbody>
           {table.getRowModel().rows.map((row) => (
             <Fragment key={row.id}>
-              <tr className="hover:bg-blue-50 even:bg-gray-100 transition">
+              <tr className="hover:bg-indigo-50 even:bg-gray-100 odd:bg-gray-50 transition">
                 {row.getVisibleCells().map((cell) => (
-                  <td 
-                  key={cell.id}
-                   className="px-4 py-3 text-gray-800 text-sm"
-                   >
+                  <td
+                    key={cell.id}
+                    className="px-4 py-2 border-b border-t border-gray-300"
+                  >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </td>
                 ))}
               </tr>
-              {row.getIsExpanded() && (
-                <tr>
-                  <td colSpan={row.getVisibleCells().length}>
-                    <ExpandableComponent
-                      data={row.original}
-                      expandOrder={dataColumns}
-                    />
-                  </td>
-                </tr>
-              )}
+              <AnimatePresence>
+                {row.getIsExpanded() && (
+                  <tr key={`expandId-${row.id}`}>
+                    <td colSpan={row.getVisibleCells().length}>
+                      <ExpandableComponent
+                        data={row.original}
+                        dataColumns={dataColumns}
+                        visibleColumnIds={visibleColumnIds}
+                      />
+                    </td>
+                  </tr>
+                )}
+              </AnimatePresence>
             </Fragment>
           ))}
         </tbody>

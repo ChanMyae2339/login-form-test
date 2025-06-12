@@ -1,63 +1,58 @@
-import React, { useMemo, useState } from 'react';
-import DATA from '../../api/data.json'; // Adjust path as needed
-import DataTable from './Table/DataTable';
-import { GROUP_COLUMNS } from "./Table/columns";
+import React, { useMemo, useState } from "react";
+import DataTable from "./Table/DataTable";
 import MOCK_DATA from "../../api/MOCK_DATA.json";
 import {
-   useReactTable,
+  useReactTable,
   getCoreRowModel,
   getFilteredRowModel,
-  
 } from "@tanstack/react-table";
-
+import { COLUMNS } from "./Table/columns";
 
 const Users = () => {
-  const columns = useMemo(() => GROUP_COLUMNS, []);
-
-  // ✅ Extract nested array from MOCK_DATA
+  const columns = useMemo(() => COLUMNS, []);
   const data = useMemo(() => MOCK_DATA, []);
 
+  const [filter, setFilter] = useState("");
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(5);
+  const [limit, setLimit] = useState(10);
 
   
-    const [filter, setFilter] = useState("");
-
- const table = useReactTable({
+  const table = useReactTable({
     data,
     columns,
     state: {
       globalFilter: filter,
-  
     },
     onGlobalFilterChange: setFilter,
-        getFilteredRowModel: getFilteredRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
     getCoreRowModel: getCoreRowModel(),
   });
+
   const filteredRows = table.getFilteredRowModel().rows;
   const paginatedRows = filteredRows.slice((page - 1) * limit, page * limit);
 
   return (
-  <div className="  flex flex-col  p-4   overflow-auto">
-  <div className=" flex flex-col   ">
-    <input
+    <div className="p-4 overflow-auto ">
+     <div className="flex justify-center w-full ">
+       <input
         type="text"
         placeholder="Search..."
-        className="border border-blue-300 rounded-md p-2 mb-4 w-64 mx-auto outline-none "
-       value={filter} 
-       onChange={(e) => setFilter(e.target.value)}
-      />   
- 
-         <DataTable
-        dataRows={paginatedRows.map(row => row.original)} // pass raw data
+        className="border p-2 rounded w-64 mb-4 outline-none border-blue-300"
+        value={filter}
+        onChange={(e) => setFilter(e.target.value)}
+      />
+     </div>
+      <DataTable
+        dataRows={paginatedRows.map((prow) => prow.original)}
         dataColumns={columns}
+
+      //  For pagination component
         page={page}
         setPage={setPage}
         limit={limit}
         setLimit={setLimit}
         totalItems={filteredRows.length}
       />
-       </div>
     </div>
   );
 };

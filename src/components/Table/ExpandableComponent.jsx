@@ -1,51 +1,47 @@
 import React from "react";
+import { motion } from "framer-motion";
 
-function ExpandableComponent({ data, expandOrder }) {
+
+function ExpandableComponent({ data, dataColumns, visibleColumnIds }) {
   if (!data) return null;
 
-  // Flatten grouped columns (if any)
-  const getLeafColumns = (columns) => {
-    const result = [];
-    for (const col of columns) {
-      if ("columns" in col) {
-        result.push(...getLeafColumns(col.columns));
-      } else {
-        result.push(col);
-      }
-    }
-    return result;
-  };
-
-  const flatColumns = getLeafColumns(expandOrder);
+  const hideColumns = dataColumns.filter(
+    (col) => !visibleColumnIds.includes(col.accessorKey)
+  );
 
   return (
-    <div className="w-full rounded-md overflow-hidden font-semibold bg-gray-50 p-2">
-      {flatColumns.map((col, index) => {
-        const label =
-          typeof col.header === "function"
-            ? col.header()
-            : col.header ?? "";
+    <motion.div
+      className="overflow-hidden  p-2"
+      initial={{ height: 0, opacity: 0 }}
+      animate={{ height: "auto", opacity: 1 }}
+      exit={{ height: 0, opacity: 0 }}
+      transition={{ duration: 0.8 }}
+    >
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {hideColumns.map((col, index) => {
+          const label =
+            typeof col.header === "function" ? col.header() : col.header ?? "";
+          const value =
+            col.accessorKey && data[col.accessorKey] !== undefined
+              ? data[col.accessorKey]
+              : "N/A";
 
-        const value =
-          col.accessorKey && data[col.accessorKey] !== undefined
-            ? data[col.accessorKey]
-            : "N/A";
-
-        return (
-          <div
-            key={`row-col-${index}`}
-            className="flex flex-row gap-2 py-1 border-b last:border-none"
-          >
-            <div className="w-1/3 px-2 text-gray-600 font-medium">
-              {label}
+          return (
+            <div
+              key={index}
+              className="flex flex-col bg-gradient-to-r from-indigo-300 to-sky-300 p-3 rounded-lg border border-gray-100 shadow-sm"
+            >
+              <span className="text-gray-800 font-semibold text-sm mb-1">
+                {label}
+              </span>
+              <span className="text-gray-800 text-sm break-words">
+                {value}
+                </span>
             </div>
-            <div className="w-2/3 px-2 text-gray-900">
-              {value}
-            </div>
-          </div>
-        );
-      })}
-    </div>
+          );
+        })}
+      </div>
+    </motion.div>
   );
 }
 

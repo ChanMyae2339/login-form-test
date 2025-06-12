@@ -1,6 +1,6 @@
 import React from "react";
-import ReactTable from "./ReactTable"; // should be the rebuilt v8 version
-import PaginationComponent from "./PaginationComponent"; // rebuilt version using table.getState()
+import ReactTable from "./ReactTable";
+import PaginationComponent from "./PaginationComponent";
 
 const DataTable = ({
   dataRows = [],
@@ -11,23 +11,22 @@ const DataTable = ({
   setLimit,
   totalItems,
 }) => {
+
   return (
-    <div className="">
-      <ReactTable
-        dataRows={dataRows}
-        dataColumns={dataColumns}
+    <div>
+    <ReactTable
+  dataRows={dataRows}
+  dataColumns={dataColumns}
+ 
+/>
+
+      <PaginationComponent
         page={page}
+        setPage={setPage}
         limit={limit}
+        setLimit={setLimit}
+        totalItems={totalItems}
       />
-      {dataRows.length > 0 && (
-        <PaginationComponent
-          page={page}
-          setPage={setPage}
-          limit={limit}
-          setLimit={setLimit}
-          totalItems={totalItems}
-        />
-      )}
     </div>
   );
 };
