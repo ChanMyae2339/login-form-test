@@ -26,7 +26,7 @@ function LoginForm() {
   
     try {
       const response = await fetch(
-        `http://localhost:5000/users?email=${email}&password=${password}&role=${role}`
+        `http://localhost:5000/users?email=${email}&password=${password}`
       );
       const data = await response.json();
 

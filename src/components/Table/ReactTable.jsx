@@ -17,6 +17,7 @@ const ReactTable = ({ dataRows, dataColumns }) => {
   const hidingPriority = ["email", "ip_address", "age", "gender", "last_name"];
 
   useMemo(() => {
+    
     const updateVisibleColumns = () => {
       const screenWidth = window.innerWidth;
 
