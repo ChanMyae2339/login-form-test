@@ -15,7 +15,7 @@ const Profile = () => {
 
   return (
     <div className="bg-gradient-to-br from-blue-100 via-indigo-100 to-indigo-200 min-h-screen flex items-center justify-center px-4 py-8">
-      <div className="w-full flex flex-col md:flex-row gap-8 items-center md:items-stretch md:justify-center">
+      <div className="w-full flex flex-col md:flex-row gap-8 items-center md:items-stretch md:justify-center mt-8">
         {/* Wrap both cards in a parent div to fix adjacent JSX error */}
         <div className="flex flex-col md:flex-row gap-8 w-full justify-center items-center ">
           {/* Left: Main Profile Card */}

@@ -1,54 +1,70 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaRegEye, FaRegEyeSlash, FaUserAlt } from "react-icons/fa";
-import { RiLockPasswordFill } from "react-icons/ri";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { RiLockPasswordFill } from "react-icons/ri";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import "react-toastify/dist/ReactToastify.css";
+import axios from "axios";
+import setTokenInCookie from "../utils/helpers/setTokenInCookie";
 
-function LoginForm() {
-  const [showPassword, setShowPassword] = useState(false);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  
+const emailRegex = new RegExp(/^\S+@\S+$/i);
+const formSchema = z.object({
+  password: z.string().min(1, {
+    message: "Password is required",
+  }),
+  email: z
+    .string()
+    .min(1, {
+      message: "Email is required.",
+    })
+    .regex(emailRegex, "Invlaid email"),
+});
+const LoginForm = () => {
   const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      password: "",
+      email: "",
+    },
+  });
 
-  const validEmail = (email) => {
-    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return regex.test(email);
-  };
-
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    if (!validEmail(email)) {
-      toast.error(" Invalid email format");
-      return;
-    }
-  
-    try {
-      const response = await fetch(
-        `http://localhost:5000/users?email=${email}&password=${password}`
-      );
-      const data = await response.json();
-
-      if (data.length > 0) {
-        localStorage.setItem("users", JSON.stringify(data[0]));
-        toast.success(" Login successful!");
-        setTimeout(() => navigate("/dashboard/users"), 1500);
-      } else {
-        toast.error(" Useremail or password incorrect");
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      toast.error(" Server error");
-    }
+  const onSubmit = async (data) => {
+    setIsLoading(true);
+    await axios
+      .post("https://backend-test-gilt-eta.vercel.app/api/users/login", data, {
+        headers: { "Content-Type": "application/json" },
+        withCredentials: true,
+      })
+      .then((res) => {
+        const accessToken = res?.data?.accessToken;
+        setTokenInCookie("accessToken", accessToken);
+        navigate("/dashboard/users", { replace: true });
+      })
+      .catch((err) => {
+        console.log("login error => ", err);
+        toast.error(
+          err?.response?.data?.message ||
+            `Error with status ${err?.response?.status}`
+        );
+      })
+      .finally(() => setIsLoading(false));
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-teal-400 to-blue-900 relative overflow-hidden">
-      {/* Stars background (optional, for effect) */}
       <div className="absolute inset-0 pointer-events-none z-0"></div>
       <div className="bg-white/90 rounded-2xl shadow-2xl max-w-md w-full mx-4 z-10">
-        {/* Scenic Illustration */}
         <div className="bg-gradient-to-r from-green-400 to-blue-500 rounded-t-2xl p-6 flex flex-col items-center relative">
           <img
             src="https://www.agbcommunication.com/_next/static/media/AGBLogo.77b5873b.svg"
@@ -62,21 +78,28 @@ function LoginForm() {
             This is the login form testing page
           </p>
         </div>
-        {/* Login Form */}
-        <form onSubmit={handleLogin} className="p-8 flex flex-col gap-4">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="p-8 flex flex-col gap-4"
+        >
           <h3 className="text-center text-lg font-semibold text-gray-700 mb-2">
             USER LOGIN
           </h3>
-          {/* Username */}
+          {/* Email */}
           <div className="relative">
             <FaUserAlt className="absolute left-3 top-3 text-blue-700" />
             <input
               type="text"
-              placeholder="Username"
-              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Email"
+              {...register("email")}
               className="w-full pl-10 pr-3 py-2 rounded-full bg-blue-100 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-400"
               required
             />
+            {errors.email && (
+              <span className="text-red-500 text-xs">
+                {errors.email.message}
+              </span>
+            )}
           </div>
           {/* Password */}
           <div className="relative">
@@ -84,8 +107,7 @@ function LoginForm() {
             <input
               type={showPassword ? "text" : "password"}
               placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              {...register("password")}
               className="w-full pl-10 pr-10 py-2 rounded-full bg-blue-100 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-400"
               required
             />
@@ -96,8 +118,12 @@ function LoginForm() {
             >
               {showPassword ? <FaRegEyeSlash /> : <FaRegEye />}
             </button>
+            {errors.password && (
+              <span className="text-red-500 text-xs">
+                {errors.password.message}
+              </span>
+            )}
           </div>
-        
           {/* Remember & Forgot Password */}
           <div className="flex justify-between items-center text-sm text-blue-900 mt-2">
             <label className="flex items-center gap-1">
@@ -112,8 +138,9 @@ function LoginForm() {
           <button
             type="submit"
             className="w-full bg-blue-700 hover:bg-blue-900 text-white font-semibold py-2 rounded-full mt-4 transition"
+            disabled={isLoading}
           >
-            Login
+            {isLoading ? "Logging in..." : "Login"}
           </button>
           <ToastContainer />
         </form>
@@ -129,6 +156,6 @@ function LoginForm() {
       </div>
     </div>
   );
-}
+};
 
 export default LoginForm;

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import {  useState } from "react";
 import { FaBars, FaHome, FaUser, FaCog } from "react-icons/fa";
 import { FaUsers } from "react-icons/fa6";
 import { ImCross } from "react-icons/im";
@@ -8,16 +8,9 @@ import { TbLogout } from "react-icons/tb";
 export default function Dashboard() {
   const navigate = useNavigate();
   const location = useLocation();
-  const [user, setUser] = useState(null);
   const [isOpen, setIsOpen] = useState(true);
   const [profile, setProfile] = useState(false);
 
-  useEffect(() => {
-    const storedUser = localStorage.getItem("users");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-  }, []);
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
@@ -25,9 +18,10 @@ export default function Dashboard() {
   const handleProfile = () => {
     setProfile(!profile);
   };
+  
   const handleLogout = () => {
     localStorage.removeItem("users");
-    navigate("/");
+    navigate("/login", { replace: true });
   };
 
   // Create breadcrumb from URL path
@@ -73,6 +67,7 @@ export default function Dashboard() {
               <FaHome />
               {isOpen && <Link to="/dashboard/home">Home</Link>}
             </li>
+
             <li
               className={`px-4 py-2 flex items-center gap-2 hover:bg-blue-300 ${
                 location.pathname === "/dashboard/profile"
@@ -83,9 +78,8 @@ export default function Dashboard() {
               <FaUser />
               {isOpen && <Link to="/dashboard/profile">Profile</Link>}
             </li>
-           
 
-              <li
+            <li
               className={`px-4 py-2 flex items-center gap-2 hover:bg-blue-300 ${
                 location.pathname === "/dashboard/table"
                   ? "bg-blue-300 font-semibold"
@@ -94,6 +88,16 @@ export default function Dashboard() {
             >
               <FaUsers />
               {isOpen && <Link to="/dashboard/users">Users</Link>}
+            </li>
+             <li
+              className={`px-4 py-2 flex items-center gap-2 hover:bg-blue-300 ${
+                location.pathname === "/dashboard/table"
+                  ? "bg-blue-300 font-semibold"
+                  : ""
+              }`}
+            >
+              <FaUsers />
+              {isOpen && <Link to="/dashboard/list">List</Link>}
             </li>
           </ul>
         </div>

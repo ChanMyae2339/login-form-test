@@ -14,22 +14,13 @@ const ReactTable = ({ dataRows, dataColumns }) => {
   const [expanded, setExpanded] = useState({});
   const [visibleColumnIds, setVisibleColumnIds] = useState([]);
 
-  const hidingPriority = ["email", "ip_address", "age", "gender", "last_name"];
-
   useMemo(() => {
-    
     const updateVisibleColumns = () => {
       const screenWidth = window.innerWidth;
-
-      let hiddenCount = 0;
-      let approxColWidth = 150;
-      let maxCols = Math.floor(screenWidth / approxColWidth);
-      hiddenCount = Math.max(0, dataColumns.length - maxCols);
-      const hiddenColumns = hidingPriority.slice(0, hiddenCount);
-      const visibleColumns = dataColumns.filter(
-        (col) => !hiddenColumns.includes(col.accessorKey)
-      );
-
+      const approxColWidth = 150;
+      const maxCols = Math.floor(screenWidth / approxColWidth);
+      // Show only the first maxCols columns
+      const visibleColumns = dataColumns.slice(0, maxCols);
       setVisibleColumnIds(
         visibleColumns.map((col) => col.id || col.accessorKey)
       );
@@ -125,8 +116,10 @@ const ReactTable = ({ dataRows, dataColumns }) => {
                   key={header.id}
                   className="px-4 py-3 text-left uppercase tracking-wider"
                 >
-                  {flexRender(header.column.columnDef.header,header.getContext() )}
-              
+                  {flexRender(
+                    header.column.columnDef.header,
+                    header.getContext()
+                  )}
                 </th>
               ))}
             </tr>
