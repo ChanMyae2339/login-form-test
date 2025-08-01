@@ -296,7 +296,7 @@ const ReactTable = ({ data, columns }) => {
             return (
               <React.Fragment key={row.id}>
                 <tr
-                  className={`border-b border-gray-200 hover:bg-green-100 even:bg-gray-100`}
+                  className={`border-b border-gray-200 hover:bg-gray-100 even:bg-blue-200`}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <td

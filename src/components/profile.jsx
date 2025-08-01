@@ -33,7 +33,7 @@ const Profile = () => {
             </div>
             {/* Name */}
             <h2 className="text-3xl font-extrabold text-gray-800 mb-2 text-center drop-shadow-md">
-              {user.name.toUpperCase() || user.fullName || "Smith"}
+              {user?.name?.toUpperCase() || user.fullName || "Smith"}
             </h2>
             {/* Email */}
             <p className="text-lg text-gray-500 mb-6 text-center">
