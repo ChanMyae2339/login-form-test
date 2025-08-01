@@ -1,10 +1,10 @@
 import React from 'react'
 import CreateUser from './CreateUser'
 import { useLocation, Navigate } from 'react-router'
-import useAuth from '../utils/hooks/useAuth'
+// import useAuth from '../utils/hooks/useAuth'
 const UserDetail = () => {
 const location = useLocation()
-const {status} = useAuth()
+// const {status} = useAuth()
 
 //   if(status === 'unauthenticated'){
 // 	return <Navigate to="/login" replace/>

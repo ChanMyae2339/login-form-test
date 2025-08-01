@@ -8,6 +8,8 @@ import { FaUser } from "react-icons/fa";
 import { RiLockPasswordFill } from "react-icons/ri";
 import { IoEyeOffOutline, IoEyeOutline } from "react-icons/io5";
 import { useNavigate } from "react-router";
+import { FaPhone } from "react-icons/fa";
+import { MdEmail } from "react-icons/md";
 
 const emailRegex = new RegExp(/^\S+@\S+$/i);
 const formSchema = z.object({
@@ -57,6 +59,8 @@ const CreateUser = ({ data }) => {
         })
         .then((response) => {
           toast.success(response.data?.message || "Successfully updated");
+          console.log("Update response => ", response.data);
+        
           navigate(-1);
         })
         .catch((error) =>
@@ -68,7 +72,12 @@ const CreateUser = ({ data }) => {
         .post(`https://backend-test-gilt-eta.vercel.app/api/users`, formData)
         .then((response) => {
           toast.success(response.data?.message || "Successfully created");
-          reset();
+if (response.data) {
+    localStorage.setItem("users", JSON.stringify(response.data));
+  }   
+         reset();
+          // console.log("Create response => ", response.data);
+          navigate("/dashboard/profile");
         })
         .catch((error) =>
           toast.error(error?.response.data?.message || "Something went wrong")
@@ -115,7 +124,7 @@ const CreateUser = ({ data }) => {
           </div>
           {/* Email Field */}
           <div className="relative">
-            <FaUser className="absolute left-3 top-3 text-blue-700" />
+            <MdEmail className="absolute left-3 top-3 text-blue-700" />
             <input
               type="text"
               placeholder="Email"
@@ -153,7 +162,7 @@ const CreateUser = ({ data }) => {
           </div>
           {/* Phone Field */}
           <div className="relative">
-            <FaUser className="absolute left-3 top-3 text-blue-700" />
+            <FaPhone className="absolute left-3 top-3 text-blue-700" />
             <input
               type="text"
               placeholder="Phone"

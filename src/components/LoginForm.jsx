@@ -49,7 +49,9 @@ const LoginForm = () => {
       .then((res) => {
         const accessToken = res?.data?.accessToken;
         setTokenInCookie("accessToken", accessToken);
-        navigate("/dashboard/users", { replace: true });
+       
+
+        navigate("/dashboard/home", { replace: true });
       })
       .catch((err) => {
         console.log("login error => ", err);

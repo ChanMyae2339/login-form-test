@@ -37,13 +37,14 @@ const SideOver = ({
 
   return (
     <div
-      className={`fixed top-20  right-0 h-screen lg:w-full  max-w-md transition-all duration-300 
+      className={`fixed top-20  right-0 h-screen w-60  max-w-md transition-all duration-300 
 		${
         isSideOverOpen ? "translate-x-0" : "translate-x-full"
       }`}
       style={{ boxShadow: isSideOverOpen ? "0 0 40px rgba(0,0,0,0.2)" : "none" }}
     >
-      <div className="flex flex-col h-full bg-gradient-to-br from-indigo-500 to-sky-400 text-gray-700 rounded-tl-2xl rounded-bl-3xl shadow-lg">
+      <div className="flex flex-col h-full 
+      bg-gradient-to-br from-indigo-500 to-sky-400  rounded-tl-2xl rounded-bl-3xl shadow-lg">
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-white/20 sticky top-0 bg-gradient-to-br from-indigo-500 to-sky-400 z-10">
           <h2 className="text-lg font-bold text-white flex items-center gap-2">

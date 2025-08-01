@@ -1,4 +1,4 @@
-import {  useState } from "react";
+import { useState } from "react";
 import { FaBars, FaHome, FaUser, FaCog } from "react-icons/fa";
 import { FaUsers } from "react-icons/fa6";
 import { ImCross } from "react-icons/im";
@@ -11,14 +11,13 @@ export default function Dashboard() {
   const [isOpen, setIsOpen] = useState(true);
   const [profile, setProfile] = useState(false);
 
-
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
   };
   const handleProfile = () => {
     setProfile(!profile);
   };
-  
+
   const handleLogout = () => {
     localStorage.removeItem("users");
     navigate("/login", { replace: true });
@@ -76,28 +75,27 @@ export default function Dashboard() {
               }`}
             >
               <FaUser />
-              {isOpen && <Link to="/dashboard/profile">Profile</Link>}
+              {isOpen && <Link to="/dashboard/profile">New user</Link>}
             </li>
 
             <li
               className={`px-4 py-2 flex items-center gap-2 hover:bg-blue-300 ${
-                location.pathname === "/dashboard/table"
-                  ? "bg-blue-300 font-semibold"
-                  : ""
-              }`}
-            >
-              <FaUsers />
-              {isOpen && <Link to="/dashboard/users">Users</Link>}
-            </li>
-             <li
-              className={`px-4 py-2 flex items-center gap-2 hover:bg-blue-300 ${
-                location.pathname === "/dashboard/table"
+                location.pathname === "/dashboard/list"
                   ? "bg-blue-300 font-semibold"
                   : ""
               }`}
             >
               <FaUsers />
               {isOpen && <Link to="/dashboard/list">List</Link>}
+            </li>
+
+            {/* Logout Button */}
+            <li
+              className="px-4 py-2 flex items-center gap-2 hover:bg-blue-300 text-red-500 cursor-pointer mt-8"
+              onClick={handleLogout}
+            >
+              <TbLogout />
+              {isOpen && <span>Logout</span>}
             </li>
           </ul>
         </div>
@@ -135,7 +133,7 @@ export default function Dashboard() {
                     className="block px-4 py-2 text-sm hover:bg-gray-100"
                     onClick={() => setProfile(false)}
                   >
-                    View Profile
+                    View New User 
                   </Link>
 
                   <div
